@@ -58,6 +58,11 @@ CREATE TABLE Saldo(
     FOREIGN KEY(CF_Giocatore) REFERENCES Giocatore(Codice_Fiscale) ON DELETE CASCADE 
 )
 
+--INDICI
+
+CREATE INDEX indice_importi_scommesse ON Effettuazione USING hash(CF_Giocatore);
+CREATE INDEX indice_quote ON Scommesse(Quota);
+
 --QUERY
 
 
