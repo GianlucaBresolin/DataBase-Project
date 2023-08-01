@@ -51,14 +51,14 @@ CREATE TABLE BlackJack(
 
 CREATE TABLE Roulette(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
-    Moltiplicatore_Numero_Vincente DECIMAL(5,2) NOT NULL, --CONTROLLARE SE ESISTE "UNSIGNED INT"
+    Moltiplicatore_Numero_Vincente DECIMAL(5,2) NOT NULL, 
     
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 )
 
 CREATE TABLE Slot(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
-    Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, --CONTROLLARE SE ESISTE "UNSIGNED INT"
+    Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, 
     Numero_Linee INT NOT NULL CHECK (Numero_Linee >= 2 AND Numero_Linee <= 10), 
     JackPot DECIMAL(6,2) , -- PUO' ESSERCI COME NO  
 
