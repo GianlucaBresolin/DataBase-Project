@@ -141,5 +141,45 @@ CREATE INDEX indice_quote ON Scommesse(Quota);
 
 --QUERY
 
+--1
+SELECT G.Nome, G.Cognome, E.Importo*S.Quota AS Vincita, S.Cavallo, S.Gara
+FROM    (Giocatore AS G 
+        JOIN 
+        Effettuazione AS E 
+        ON G.Codice_Fiscale=E.CF_Giocatore)
+        JOIN 
+        Scommesse_Cavallo AS S 
+        ON S.ID_Scommessa=G.ID_Gioco 
+WHERE E.Esito=TRUE
+ORDER BY Vincita DESC
+LIMIT 20
+
+--2
+SELECT G.Nome, G.Cognome, SUM(S.Saldo_Reale)
+FROM    (Giocatore AS G
+        JOIN
+        Saldo AS S
+        ON G.Codice_Fiscale=S.CF_Giocatore)
+
+--3
+SELECT G.Nome, G.Cognome, SUM(E.Importo) AS Tot_Scommesso
+FROM    (Giocatore AS G
+        JOIN 
+        Effettuazione AS E
+        ON G.Codice_Fiscale=E.CF_Giocatore)
+ORDER BY Tot_Scommesso DESC
+
+--4
+SELECT G.Nome, G.Cognome, E.Importo AS Perdita, S.Risultato, S.Partita
+FROM    (Giocatore AS G 
+        JOIN 
+        Effettuazione AS E 
+        ON G.Codice_Fiscale=E.CF_Giocatore)
+        JOIN 
+        Scommessa_Calcio AS S 
+        ON S.ID_Scommessa=G.ID_Gioco 
+WHERE E.Esito=FALSE
+ORDER BY Perdita DESC
+LIMIT 20
 
 --POPOLAMENTO
