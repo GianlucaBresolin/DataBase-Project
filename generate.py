@@ -52,8 +52,40 @@ file_name = "tabellaGiocatori.txt"
 
 file_content = []
 
+file_content.append("Giocatori \n")
 for i in range(200):
     file_content.append('( "' + codici_fiscali[i] + '" ,  "' + random.choice(nomi) +  '" ,  "' + random.choice(cognomi) + '" ,  "' + random.choice(date_di_nascita) + '" ,  "' + random.choice(nazionalita) +'" )')
+
+
+file_content.append("\nConto\n")
+# Conto 
+
+nomi_banche = [
+    "JPMorgan Chase & Co.",
+    "Bank of America",
+    "Citibank",
+    "Wells Fargo & Co.",
+    "HSBC Holdings plc",
+    "Deutsche Bank AG",
+    "Barclays plc",
+    "Credit Suisse Group AG",
+    "BNP Paribas",
+    "Mitsubishi UFJ Financial Group (MUFG)"
+]
+
+# Id conto
+Codice_Univoco_Conto = []
+for i in range(60):
+    cf = generate_random_cf()[:10]
+    while cf in Codice_Univoco_Conto:
+        cf = generate_random_cf()[:10]
+    
+    Codice_Univoco_Conto.append(cf)
+    
+
+for i in range(40):
+    file_content.append('( "' + Codice_Univoco_Conto[i] + '" ,  ' + str(round(random.random() + random.randrange(100000,1000000),2)) +  ' ,  "' + random.choice(nomi_banche) +'" )')
+
 
 with open(file_name, 'w') as file:
     for line in file_content:
