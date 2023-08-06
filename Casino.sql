@@ -181,5 +181,36 @@ FROM    (Giocatore AS G
 WHERE E.Esito=FALSE
 ORDER BY Perdita DESC
 LIMIT 20
+--MENNY
+--1
+SELECT G.Codice_Fiscale, G.Nome, G.Cognome
+FROM  (Giocatore as G
+      JOIN Giocata as J 
+      ON G.Codice_Fiscale = J.CF_Giocatore )
+      JOIN Poker as P ON J.ID_Gioco = P.ID_Gioco
+      JOIN Casino as C ON J.ID_Casino = C.ID_Casino
+WHERE C.Paese = "PARAMETRO";
+
+--2
+SELECT C.ID_Casino, C.indirizzo, C.Paese
+FROM (Casino as C
+    JOIN Conto as Co ON C.ID_Casino = Co.ID_Casino
+    JOIN Poker as P ON C.ID_Casino  = P.ID_Gioco
+    )
+WHERE Co.Importo >= 'PARAMETRO'
+AND P.Limite_Tavolo > 7;
+
+--3
+SELECT C.ID_Casino , C.indirizzo, C.Paese, COUNT(*) AS Numero_Giocate
+FROM (Casino as C
+    JOIN Giocata as S ON C.ID_Casino = S.ID_Casino 
+    JOIN Slot as SL ON S.ID_Gioco = SL.ID_Gioco)
+WHERE S.Data >= 'PARAMETRO DI INIZIO'
+AND S.Data <= 'PARAMETRO DI FINE'
+GROUP BY C.ID_Casino, C.indirizzo, C.Paese;
+
+
+
+
 
 --POPOLAMENTO
