@@ -4,7 +4,7 @@ CREATE TABLE Giocatore(
     Codice_Fiscale CHAR(16) PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Cognome VARCHAR(255) NOT NULL,
-    Data_di_Nascita DATE NOT NULL,
+    Data_di_Nascita DATE NOT NULL CHECK(YEAR(Data_di_Nascita)<2005),
     Nazionalità VARCHAR(255),
 )
 
