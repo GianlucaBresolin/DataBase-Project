@@ -5,7 +5,7 @@ CREATE TABLE Giocatore(
     Nome VARCHAR(255) NOT NULL,
     Cognome VARCHAR(255) NOT NULL,
     Data_di_Nascita DATE NOT NULL CHECK(YEAR(Data_di_Nascita)<2005),
-    Nazionalità VARCHAR(255),
+    Nazionalita VARCHAR(255),
 )
 
 -- MENNY
@@ -16,10 +16,10 @@ CREATE TABLE Conto(
    Banca VARCHAR(255) NOT NULL,
 )
 
-CREATE TABLE ID_Casino(
+CREATE TABLE Casino(
    ID_Casino VARCHAR(30) PRIMARY KEY,
    Indirizzo VARCHAR(255) NOT NULL,
-   Nazionalità VARCHAR(255) NOT NULL,
+   Nazionalita VARCHAR(255) NOT NULL,
    Data_Apertura DATE NOT NULL,
    Conto VARCHAR(10) NOT NULL,
 
@@ -29,7 +29,7 @@ CREATE TABLE ID_Casino(
 CREATE TABLE Gioco(
     ID_Gioco CHAR(10) PRIMARY KEY,
     Puntata_Minima DECIMAL(4,2) NOT NULL,
-    Casino CHAR(10) NOT NULL,
+    Casino CHAR(30) NOT NULL,
 
     FOREIGN KEY(Casino) REFERENCES Casino(ID_Casino) ON DELETE CASCADE
 )
@@ -87,7 +87,7 @@ CREATE TABLE Scomessa(
     Quota DECIMAL(4,2) NOT NULL,
     Data_Apertura DATE,
     Data_Chiusura DATE,
-    Casino CHAR(10) NOT NULL,
+    Casino CHAR(30) NOT NULL,
 
     FOREIGN KEY(Casino) REFERENCES Casino(ID_Casino) ON DELETE CASCADE
 )
@@ -95,7 +95,7 @@ CREATE TABLE Scomessa(
 CREATE TABLE Scomessa_Cavallo(
     ID_Scommessa VARCHAR(10) PRIMARY KEY,
     Cavallo VARCHAR(255) NOT NULL,
-    Gara VARCHAR(10) NOT NULL,
+    Gara VARCHAR(20) NOT NULL,
 
     FOREIGN KEY(ID_Scommessa) REFERENCES Scomessa(ID_Scommessa) ON DELETE CASCADE
 )
