@@ -2,6 +2,9 @@ import random
 import string
 from  datetime import *
 
+
+#Cambiare virgolette e mettere le date virgolettate
+
 file_name = "tabellaGiocatori.txt"
 
 file_content = []
@@ -691,7 +694,7 @@ for i in range(70):
 file_content.append(";\n\n\n\n")
 
 #Giocata
-file_content.append("INSERT INTO Gioco(ID_Gioco, CF_Giocatore, Importo, Vincita , Data_Giocata ,Numero_Scommesso, Colore_Scommesso  ) VALUES \n")
+file_content.append("INSERT INTO Giocata(ID_Gioco, CF_Giocatore, Importo, Vincita , Data_Giocata ,Numero_Scommesso, Colore_Scommesso  ) VALUES \n")
 for i in range(500):
     if  Codice_Univoco_ID_Gioco_giocata[i] in Codice_Univoco_ID_Gioco_Roulette:
         file_content.append('( "' + Codice_Univoco_ID_Gioco_giocata[i] + '" ,  "' + codici_fiscali_giocata[i] +  '" ,  ' +  str(round(random.uniform(10, 10000), 2))  +  ' ,  ' + str(random.randint(0,1000000)) +' ,  "' + Data_giocata[i] + '" , ' +  str(random.randint(0, 36)) + '  , "' + random.choice(['R' , 'B']) + '")')
