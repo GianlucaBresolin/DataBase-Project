@@ -122,7 +122,7 @@ CREATE TABLE Effettuazione(
 
 CREATE TABLE Saldo(
     ID_Saldo VARCHAR(10),
-    ID_Casino VARCHAR(10),
+    ID_Casino VARCHAR(30),
     Bonus FLOAT DEFAULT 0 CHECK (Bonus= ROUND(Bonus,2)),
     Saldo_Reale FLOAT DEFAULT 0 CHECK (Saldo_Reale= ROUND(Saldo_Reale,2)), --RICORDO A MENNY DI CAMBIARE IMPORTO IN SALDO REALE NEL MOD. LOGICO -- FATTO
     CF_Giocatore CHAR(16) NOT NULL,
