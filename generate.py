@@ -196,7 +196,7 @@ indirizzi_casino = [
     "Seine Quai",
     "La Rambla",
     "Harbour Street",
-    "King's Road",
+    "Kings Road",
     "Alexanderplatz",
     "Piazza Navona",
     "Broadway",
@@ -244,7 +244,7 @@ for i in range(300):
 Data_Apertura_scommessa = []
 Data_Chiusura_scommessa = []
 data_effettuazione = []
-for i in range(500):
+for i in range(1000):
     data = generate_random_date()
     data_chiusura = (data + timedelta(days=3))
     data_effettuazione.append(generate_random_date_btw(data, data_chiusura).strftime("%Y/%m/%d"))
@@ -510,60 +510,47 @@ for i in range(250):
 
 # 
 Codice_Univoco_ID_Gioco = []
-for i in range(280):
+for i in range(500):
     cg = generate_random_cf()[:10]
     while cg in Codice_Univoco_ID_Gioco:
         cg = generate_random_cf()[:10]   
     Codice_Univoco_ID_Gioco.append(cg)
 
 
-Codice_Univoco_scommessa_Effetuazione = []
-codici_fiscali_effettuazione = []
+
 Codice_Univoco_ID_Gioco_giocata = []
-codici_fiscali_giocata = []
+used_indices = []
+
 
 ##DA RIVEDERE
-def trova_indici_elemento_eff(elemento):
-    indici = []
-    for indice, valore in enumerate(Codice_Univoco_scommessa_Effetuazione):
-        if valore == elemento:
-            indici.append(indice)
+def create_unique_pairs(list1, list2):
+    pairs = set()  # Utilizziamo un insieme per garantire l'unicità delle coppie
 
-    tmp = []
-    for indice in indici:
-        tmp.append(codici_fiscali_effettuazione[indice])
-    return tmp
+    while len(pairs) < 1000:
+        if not list1 or not list2:
+            break
 
-def trova_indici_elemento_gioca(elemento):
-    indici = []
-    for indice, valore in enumerate(Codice_Univoco_ID_Gioco_giocata):
-        if valore == elemento:
-            indici.append(indice)
+        item1 = random.choice(list1)
+        item2 = random.choice(list2)
+        pair = (item1, item2)
 
-    tmp = []
-    for indice in indici:
-        tmp.append(codici_fiscali_giocata[indice])
-    return tmp
+        if pair not in pairs:  # Verifica l'unicità della coppia
+            pairs.add(pair)
 
-for i in range(500):
-    Codice_Univoco_scommessa_Effetuazione.append(random.choice(Codice_Univoco_scommessa))
-    codici_fiscali_effettuazione_tmp = random.choice(codici_fiscali)
-    while codici_fiscali_effettuazione_tmp in trova_indici_elemento_eff(Codice_Univoco_scommessa_Effetuazione[i]):
-        codici_fiscali_effettuazione_tmp = random.choice(codici_fiscali)
-    codici_fiscali_effettuazione.append(random.choice(codici_fiscali))
+    return tuple(pairs)
 
-for i in range(500):
-    Codice_Univoco_ID_Gioco_giocata.append(random.choice(Codice_Univoco_ID_Gioco))
-    codici_fiscali_giocata_tmp = random.choice(codici_fiscali)
-    while codici_fiscali_giocata_tmp in trova_indici_elemento_gioca(Codice_Univoco_ID_Gioco_giocata[i]):
-        codici_fiscali_giocata_tmp = random.choice(codici_fiscali)
-    codici_fiscali_giocata.append(random.choice(codici_fiscali))
+
+
+coppieUniche = create_unique_pairs(Codice_Univoco_scommessa, codici_fiscali)
+print(len(coppieUniche))
+
 ##DA RIVEDERE
 
-Codice_Univoco_ID_Gioco_poker = Codice_Univoco_ID_Gioco[:70]
-Codice_Univoco_ID_Gioco_blackjack = Codice_Univoco_ID_Gioco[70:140]
-Codice_Univoco_ID_Gioco_Roulette = Codice_Univoco_ID_Gioco[140:210]
-Codice_Univoco_ID_Gioco_Slot = Codice_Univoco_ID_Gioco[210:280]
+
+Codice_Univoco_ID_Gioco_poker = Codice_Univoco_ID_Gioco[:125]
+Codice_Univoco_ID_Gioco_blackjack = Codice_Univoco_ID_Gioco[125:250]
+Codice_Univoco_ID_Gioco_Roulette = Codice_Univoco_ID_Gioco[250:375]
+Codice_Univoco_ID_Gioco_Slot = Codice_Univoco_ID_Gioco[375:500]
 
 numeri_jackpot = [
     50000,
@@ -590,7 +577,7 @@ for i in range(500):
 #Giocatore
 file_content.append("INSERT INTO Giocatore(Codice_Fiscale, Nome, Cognome, Data_di_Nascita, Nazionalita) VALUES \n")
 for i in range(200):
-    file_content.append('( "' + codici_fiscali[i] + '" ,  "' + random.choice(nomi) +  '" ,  "' + random.choice(cognomi) + '" ,  "' + random.choice(date_di_nascita) + '" ,  "' + random.choice(nazionalita) +'" )')
+    file_content.append("( '" + codici_fiscali[i] + "' ,  '"  + random.choice(nomi) +  "' ,  '"  + random.choice(cognomi) + "',  '"  + random.choice(date_di_nascita) + "',  '" + random.choice(nazionalita) + "' )")
     if i != 199:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
@@ -599,7 +586,7 @@ file_content.append(";\n\n\n\n")
 #CONTO
 file_content.append("INSERT INTO Conto(ID_Conto, Importo, Banca) VALUES \n")
 for i in range(50):
-    file_content.append('( "' + Codice_Univoco_Conto[i] + '" ,  ' + str(round(random.uniform(800000, 8000000), 2)) +  ' ,  "' + random.choice(nomi_banche) +'" )')
+    file_content.append("( '" + Codice_Univoco_Conto[i] + "' ,  " + str(round(random.uniform(800000, 8000000), 2)) +  " ,  '" + random.choice(nomi_banche) +"' )")
     if i != 49:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
@@ -607,7 +594,7 @@ file_content.append(";\n\n\n\n")
 # Casino
 file_content.append("INSERT INTO Casino(ID_Casino, Indirizzo, Nazionalita, Data_Apertura, Conto) VALUES \n")
 for i in range(50):
-    file_content.append('( "' + casino_nomi[i] + '" ,  "' + indirizzi_casino[i] +  '" ,  "' + random.choice(nazionalita) +  '" ,  "' + random.choice(Data_Apertura) +'" ,  "' + Codice_Univoco_Conto[i]+'")')
+    file_content.append("( '" + casino_nomi[i] + "' ,  '" + indirizzi_casino[i] +  "' ,  '" + random.choice(nazionalita) +  "' ,  '" + random.choice(Data_Apertura) +"' ,  '" + Codice_Univoco_Conto[i]+"')")
     if i != 49:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
@@ -615,7 +602,7 @@ file_content.append(";\n\n\n\n")
 #Scommessa 
 file_content.append("INSERT INTO Scomessa(ID_Scommessa, Quota, Data_Apertura, Data_Chiusura, Casino) VALUES \n")
 for i in range(300):
-    file_content.append('( "' + Codice_Univoco_scommessa[i] + '" ,  ' + str(round(random.uniform(0.5, 20.0), 2)) +  ' ,  "' + Data_Apertura_scommessa[i]+  '" ,  "' + Data_Chiusura_scommessa[i] +'" ,  "' + random.choice(casino_nomi) +'")')
+    file_content.append("( '" + Codice_Univoco_scommessa[i] + "' ,  " + str(round(random.uniform(0.5, 20.0), 2)) +  " ,  '" + Data_Apertura_scommessa[i]+  "' ,  '" + Data_Chiusura_scommessa[i] +"' ,  '" + random.choice(casino_nomi) +"')")
     if i != 299:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
@@ -623,7 +610,7 @@ file_content.append(";\n\n\n\n")
 #Scommessa_Cavallo
 file_content.append("INSERT INTO Scomessa_Cavallo(ID_Scommessa, Cavallo, Gara) VALUES \n")
 for i in range(150):
-    file_content.append('( "' + Codice_Univoco_scommessa_Cavallo[i] + '" ,  "' + random.choice(nomi_cavallo) +  '" ,  "' + random.choice(nomi_gare) +  '")')
+    file_content.append("( '" + Codice_Univoco_scommessa_Cavallo[i] + "' ,  '" + random.choice(nomi_cavallo) +  "' ,  '" + random.choice(nomi_gare) +  "')")
     if i != 149:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
@@ -631,80 +618,86 @@ file_content.append(";\n\n\n\n")
 #Scommessa_Calcio
 file_content.append("INSERT INTO Scomessa_Calcio(ID_Scommessa, Risultato, Partita) VALUES \n")
 for i in range(150):
-    file_content.append('( "' + Codice_Univoco_scommessa_Calcio[i] + '" ,  "' + str(random.randint(0, 4)) + " " + str(random.randint(0, 4))  + '" ,  "' + random.choice(match_names) +  '")')
+    file_content.append("( '" + Codice_Univoco_scommessa_Calcio[i] + "' ,  '" + str(random.choice([1,2,"X"]))  + "' ,  '" + random.choice(match_names) +  "')")
     if i != 149:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Effettuazione 
 file_content.append("INSERT INTO Effettuazione(ID_Scommessa, CF_Giocatore, Importo, Esito, Data_Effettuazione) VALUES \n")
-for i in range(500):
-    file_content.append('( "' + Codice_Univoco_scommessa_Effetuazione[i] + '" ,  "' + codici_fiscali_effettuazione[i] +  '" ,  ' +  str(round(random.uniform(10, 10000), 2))  +  ' ,  ' + str(random.choice([True, False])) +' ,  "' + data_effettuazione[i] +'")')
-    if i != 499:
+for i in range(1000):
+    file_content.append("( '" + coppieUniche[i][0] + "' ,  '" + coppieUniche[i][1]  +  "' ,  " +  str(round(random.uniform(10, 10000), 2))  +  " ,  " + str(random.choice([True, False])) + " ,  '" + data_effettuazione[i] +"')")
+    if i != 999:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Saldo 
 file_content.append("INSERT INTO Saldo(ID_Saldo, ID_Casino, Bonus, Saldo_Reale, CF_Giocatore) VALUES \n")
 for i in range(250):
-    file_content.append('( "' + Codice_Univoco_Saldo[i] + '" ,  "' + random.choice(casino_nomi) +  '" ,  ' +  str(round(random.uniform(0, 5000), 2))  +  ' ,  ' + str(round(random.uniform(0, 100000), 2)) +' ,  "' + random.choice(codici_fiscali) +'")')
+    file_content.append("( '" + Codice_Univoco_Saldo[i] + "' ,  '" + random.choice(casino_nomi) +  "' ,  " +  str(round(random.uniform(0, 5000), 2))  +  " ,  " + str(round(random.uniform(0, 100000), 2)) +" ,  '" + random.choice(codici_fiscali) +"')")
     if i != 249:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Gioco
 file_content.append("INSERT INTO Gioco(ID_Gioco, Puntata_Minima, Casino) VALUES \n")
-for i in range(280):
-    file_content.append('( "' + Codice_Univoco_ID_Gioco[i] + '" ,  ' + str(random.randint(1, 10)) +  ' ,  "' + random.choice(casino_nomi) +'" )')
-    if i != 279:
+for i in range(500):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco[i] + "' ,  " + str(random.randint(1, 10)) +  " ,  '" + random.choice(casino_nomi) +"' )")
+    if i != 499:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 
 #Poker
 file_content.append("INSERT INTO Poker(ID_Gioco, Limite_Tavolo) VALUES \n")
-for i in range(70):
-    file_content.append('( "' + Codice_Univoco_ID_Gioco_poker[i] + '" ,  ' + str(random.randint(6, 12)) +  ' )')
-    if i != 69:
+for i in range(125):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco_poker[i] + "' ,  " + str(random.randint(6, 12)) +  " )")
+    if i != 124:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #BlackJack
 file_content.append("INSERT INTO BlackJack(ID_Gioco, Numero_Mazzi, Limite_Tavolo) VALUES \n")
-for i in range(70):
-    file_content.append('( "' + Codice_Univoco_ID_Gioco_blackjack[i] + '" ,  ' + str(random.randint(1, 4)) +  ', ' + str(random.randint(4,8)) + ')')
-    if i != 69:
+for i in range(125):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco_blackjack[i] + "' ,  " + str(random.randint(1, 4)) +  ", "+ str(random.randint(4,8)) + ")")
+    if i != 124:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Roulette
 file_content.append("INSERT INTO Roulette(ID_Gioco, Moltiplicatore_Numero_Vincente) VALUES \n")
-for i in range(70):
-    file_content.append('( "' + Codice_Univoco_ID_Gioco_Roulette[i] + '" ,  ' + str(random.uniform(1, 500)) + ')')
-    if i != 69:
+for i in range(125):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco_Roulette[i] + "' ,  " + str(random.uniform(1, 500)) + ")")
+    if i != 124:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Slot
 file_content.append("INSERT INTO Slot(ID_Gioco, Moltiplicatore_Massimo, Numero_Linee , JackPot) VALUES \n")
-for i in range(70):
-    file_content.append('( "' + Codice_Univoco_ID_Gioco_Slot[i] + '" ,  ' + str(random.uniform(1, 100)) +  ', ' + str(random.randint(2,10)) +  ', ' + str(random.choice(numeri_jackpot)) + ')')
-    if i != 69:
+for i in range(125):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco_Slot[i] + "' ,  " + str(random.uniform(1, 100)) +  "," + str(random.randint(2,10)) +  "," + str(random.choice(numeri_jackpot)) + ")")
+    if i != 124:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 #Giocata
+
+random.shuffle(Codice_Univoco_ID_Gioco)
+
 file_content.append("INSERT INTO Giocata(ID_Gioco, CF_Giocatore, Importo, Vincita , Data_Giocata ,Numero_Scommesso, Colore_Scommesso  ) VALUES \n")
-for i in range(500):
-    if  Codice_Univoco_ID_Gioco_giocata[i] in Codice_Univoco_ID_Gioco_Roulette:
-        file_content.append('( "' + Codice_Univoco_ID_Gioco_giocata[i] + '" ,  "' + codici_fiscali_giocata[i] +  '" ,  ' +  str(round(random.uniform(10, 10000), 2))  +  ' ,  ' + str(random.randint(0,1000000)) +' ,  "' + Data_giocata[i] + '" , ' +  str(random.randint(0, 36)) + '  , "' + random.choice(['R' , 'B']) + '")')
-    else:
-        file_content.append('( "' + Codice_Univoco_ID_Gioco_giocata[i] + '" ,  "' + codici_fiscali_giocata[i] +  '" ,  ' +  str(round(random.uniform(10, 10000), 2))  +  ' ,  ' + str(random.randint(0,1000000)) +' ,  "' + Data_giocata[i] +'")')
-    if i != 499:
+for i in range(250):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco[i] + "' ,  '" + random.choice(codici_fiscali) +  "' ,  " +  str(round(random.uniform(10, 10000), 2))  +  " ,  " + str(random.randint(0,1000000)) +" ,  '" + Data_giocata[i].strftime("%Y/%m/%d") + "' , " +  str(random.randint(0, 36)) + "  , '" + random.choice(['R' , 'B']) + "')")
+    if i != 249:
         file_content.append(',\n')
 file_content.append(";\n\n\n\n")
 
 
+file_content.append("INSERT INTO Giocata(ID_Gioco, CF_Giocatore, Importo, Vincita , Data_Giocata ) VALUES \n")
+for i in range(250):
+    file_content.append("( '" + Codice_Univoco_ID_Gioco[i+250] + "' ,  '" + random.choice(codici_fiscali) +  "' ,  " +  str(round(random.uniform(10, 10000), 2))  +  " ,  " + str(random.randint(0,1000000)) +" ,  '" + Data_giocata[i+250].strftime("%Y/%m/%d") +"')")
+    if i != 249:
+        file_content.append(',\n')
+file_content.append(";\n\n\n\n")
 
 with open(file_name, 'w') as file:
     for line in file_content:
