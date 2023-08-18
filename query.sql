@@ -1,5 +1,11 @@
 --CREAZIONE TABELLE
 
+
+--Query provate
+
+-- Rimossi alcuni check che davano errori
+-- Rimossi Unsigned INT
+
 CREATE TABLE Giocatore(
     Codice_Fiscale CHAR(16) PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
@@ -59,8 +65,8 @@ CREATE TABLE Roulette(
 CREATE TABLE Slot(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
     Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, 
-    Numero_Linee INT NOT NULL CHECK (Numero_Linee >= 2 AND Numero_Linee <= 10), 
-    JackPot DECIMAL(6,2) , -- PUO' ESSERCI COME NO  
+    Numero_Linee INT NOT NULL,
+    JackPot DECIMAL(8,2) , -- PUO' ESSERCI COME NO  
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
@@ -100,10 +106,6 @@ CREATE TABLE Scomessa_Cavallo(
     FOREIGN KEY(ID_Scommessa) REFERENCES Scomessa(ID_Scommessa) ON DELETE CASCADE
 );
 
---Query provate
-
--- Rimossi alcuni check che davano errori
--- Rimossi Unsigned INT
 
 CREATE TABLE Scomessa_Calcio(
     ID_Scommessa VARCHAR(10) PRIMARY KEY,
