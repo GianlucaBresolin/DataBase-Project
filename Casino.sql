@@ -141,7 +141,7 @@ CREATE INDEX indice_quote ON Scommesse(Quota);
 
 --QUERY
 
---1
+--1 NON VA
 SELECT G.Nome, G.Cognome, E.Importo*S.Quota AS Vincita, S.Cavallo, S.Gara
 FROM    (Giocatore AS G 
         JOIN 
@@ -160,16 +160,17 @@ FROM    (Giocatore AS G
         JOIN
         Saldo AS S
         ON G.Codice_Fiscale=S.CF_Giocatore)
-
+GROUP BY G.Nome,G.Cognome --AGGIUNTO perche dava errore senza
 --3
 SELECT G.Nome, G.Cognome, SUM(E.Importo) AS Tot_Scommesso
 FROM    (Giocatore AS G
         JOIN 
         Effettuazione AS E
         ON G.Codice_Fiscale=E.CF_Giocatore)
+GROUP BY G.Nome,G.Cognome        
 ORDER BY Tot_Scommesso DESC
 
---4
+--4 NON VA
 SELECT G.Nome, G.Cognome, E.Importo AS Perdita, S.Risultato, S.Partita
 FROM    (Giocatore AS G 
         JOIN 
@@ -188,26 +189,32 @@ FROM  (Giocatore as G
       JOIN Giocata as J 
       ON G.Codice_Fiscale = J.CF_Giocatore )
       JOIN Poker as P ON J.ID_Gioco = P.ID_Gioco
-      JOIN Casino as C ON J.ID_Casino = C.ID_Casino
-WHERE C.Paese = "PARAMETRO";
+	  JOIN Gioco as O ON O.ID_Gioco = P.ID_Gioco
+      JOIN Casino as C ON O.Casino = C.ID_Casino
+WHERE C.Nazionalita = 'Australiana';
 
 --2
-SELECT C.ID_Casino, C.indirizzo, C.Paese
+SELECT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli
 FROM (Casino as C
-    JOIN Conto as Co ON C.ID_Casino = Co.ID_Casino
-    JOIN Poker as P ON C.ID_Casino  = P.ID_Gioco
+    JOIN Conto as Co ON C.Conto = Co.Id_conto
+    JOIN Gioco as G ON C.ID_Casino  = G.casino
+	JOIN Poker as P ON G.ID_Gioco = P.ID_Gioco
     )
-WHERE Co.Importo >= 'PARAMETRO'
-AND P.Limite_Tavolo > 7;
+WHERE Co.Importo >= 7000000
+AND P.Limite_Tavolo > 7
+GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita
+
 
 --3
-SELECT C.ID_Casino , C.indirizzo, C.Paese, COUNT(*) AS Numero_Giocate
-FROM (Casino as C
-    JOIN Giocata as S ON C.ID_Casino = S.ID_Casino 
-    JOIN Slot as SL ON S.ID_Gioco = SL.ID_Gioco)
-WHERE S.Data >= 'PARAMETRO DI INIZIO'
-AND S.Data <= 'PARAMETRO DI FINE'
-GROUP BY C.ID_Casino, C.indirizzo, C.Paese;
+SELECT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate
+FROM (Casino as C 
+    JOIN Gioco as G ON C.ID_Casino  = G.casino
+    JOIN Slot as SL ON G.ID_Gioco = SL.ID_Gioco
+    JOIN Giocata as S ON SL.ID_Gioco  = S.ID_Gioco
+    )
+WHERE S.Data_Giocata >= '2015/05/22'
+AND S.Data_Giocata <= '2022/05/22'
+GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita;
 
 
 
