@@ -4,7 +4,7 @@ CREATE TABLE Giocatore(
     Codice_Fiscale CHAR(16) PRIMARY KEY,
     Nome VARCHAR(255) NOT NULL,
     Cognome VARCHAR(255) NOT NULL,
-    Data_di_Nascita DATE NOT NULL CHECK(YEAR(Data_di_Nascita)<2005),
+    Data_di_Nascita DATE NOT NULL CHECK(EXTRACT(YEAR FROM Data_di_Nascita) < 2005),
     Nazionalita VARCHAR(255)
 );
 
@@ -36,15 +36,15 @@ CREATE TABLE Gioco(
 
 CREATE TABLE Poker(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
-    Limite_Tavolo UNSIGNED INT NOT NULL, --CONTROLLARE SE ESISTE "UNSIGNED INT"
+    Limite_Tavolo INT NOT NULL, 
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
 
 CREATE TABLE BlackJack(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
-    Numero_Mazzi UNSIGNED INT NOT NULL, --CONTROLLARE SE ESISTE "UNSIGNED INT"
-    Limite_Tavolo UNSIGNED INT NOT NULL, --CONTROLLARE SE ESISTE "UNSIGNED INT"
+    Numero_Mazzi INT NOT NULL, 
+    Limite_Tavolo INT NOT NULL, 
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
@@ -60,7 +60,7 @@ CREATE TABLE Slot(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
     Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, 
     Numero_Linee INT NOT NULL CHECK (Numero_Linee >= 2 AND Numero_Linee <= 10), 
-    JackPot DECIMAL(6,2) , -- PUO' ESSERCI COME NO  
+    JackPot DECIMAL(6,2),   
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
@@ -68,11 +68,11 @@ CREATE TABLE Slot(
 CREATE TABLE Giocata(
     ID_Gioco VARCHAR(10),
     CF_Giocatore VARCHAR(16),
-    Importo FLOAT NOT NULL CHECK (Importo= ROUND(Importo,2)),
+    Importo DECIMAL(10, 2) NOT NULL,
     Vincita DECIMAL(10,2),
     Data_Giocata DATE NOT NULL,
     Numero_Scommesso INT DEFAULT NULL CHECK (Numero_Scommesso >= 0 AND Numero_Scommesso <= 36), 
-    Colore_Scommesso CHAR(1) DEFAULT NULL CHECK (Colore_Scommesso == 'R' OR Colore_Scommesso == 'B'), 
+    Colore_Scommesso CHAR(1) DEFAULT NULL CHECK (Colore_Scommesso = 'R' OR Colore_Scommesso = 'B'), 
 
     PRIMARY KEY(ID_Gioco,CF_Giocatore),
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE,
@@ -111,7 +111,7 @@ CREATE TABLE Scomessa_Calcio(
 CREATE TABLE Effettuazione(
     ID_Scommessa VARCHAR(10),
     CF_Giocatore VARCHAR(16),
-    Importo FLOAT NOT NULL CHECK (Importo= ROUND(Importo,2)),
+    Importo DECIMAL(10,2) NOT NULL,
     Esito BOOLEAN,
     Data_Effettuazione DATE NOT NULL,
 
@@ -123,8 +123,8 @@ CREATE TABLE Effettuazione(
 CREATE TABLE Saldo(
     ID_Saldo VARCHAR(10),
     ID_Casino VARCHAR(30),
-    Bonus FLOAT DEFAULT 0 CHECK (Bonus= ROUND(Bonus,2)),
-    Saldo_Reale FLOAT DEFAULT 0 CHECK (Saldo_Reale= ROUND(Saldo_Reale,2)), --RICORDO A MENNY DI CAMBIARE IMPORTO IN SALDO REALE NEL MOD. LOGICO -- FATTO
+    Bonus DECIMAL(10,2) DEFAULT 0,
+    Saldo_Reale DECIMAL(10,2) DEFAULT 0,
     CF_Giocatore CHAR(16) NOT NULL,
 
     PRIMARY KEY(ID_Saldo, ID_Casino),
@@ -141,7 +141,7 @@ CREATE INDEX indice_quote ON Scommesse(Quota);
 
 --QUERY
 
---1 NON VA
+--1 
 SELECT G.Nome, G.Cognome, E.Importo*S.Quota AS Vincita, S.Cavallo, S.Gara
 FROM    (Giocatore AS G 
         JOIN 
@@ -149,7 +149,7 @@ FROM    (Giocatore AS G
         ON G.Codice_Fiscale=E.CF_Giocatore)
         JOIN 
         Scommesse_Cavallo AS S 
-        ON S.ID_Scommessa=G.ID_Gioco 
+        ON S.ID_Scommessa=E.ID_Gioco 
 WHERE E.Esito=TRUE
 ORDER BY Vincita DESC
 LIMIT 20
@@ -160,7 +160,7 @@ FROM    (Giocatore AS G
         JOIN
         Saldo AS S
         ON G.Codice_Fiscale=S.CF_Giocatore)
-GROUP BY G.Nome,G.Cognome --AGGIUNTO perche dava errore senza
+GROUP BY G.Nome, G.Cognome 
 --3
 SELECT G.Nome, G.Cognome, SUM(E.Importo) AS Tot_Scommesso
 FROM    (Giocatore AS G
@@ -170,7 +170,7 @@ FROM    (Giocatore AS G
 GROUP BY G.Nome,G.Cognome        
 ORDER BY Tot_Scommesso DESC
 
---4 NON VA
+--4 
 SELECT G.Nome, G.Cognome, E.Importo AS Perdita, S.Risultato, S.Partita
 FROM    (Giocatore AS G 
         JOIN 
@@ -178,10 +178,11 @@ FROM    (Giocatore AS G
         ON G.Codice_Fiscale=E.CF_Giocatore)
         JOIN 
         Scommessa_Calcio AS S 
-        ON S.ID_Scommessa=G.ID_Gioco 
+        ON S.ID_Scommessa=E.ID_Gioco 
 WHERE E.Esito=FALSE
 ORDER BY Perdita DESC
 LIMIT 20
+
 --MENNY
 --1
 SELECT G.Codice_Fiscale, G.Nome, G.Cognome
@@ -215,9 +216,3 @@ FROM (Casino as C
 WHERE S.Data_Giocata >= '2015/05/22'
 AND S.Data_Giocata <= '2022/05/22'
 GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita;
-
-
-
-
-
---POPOLAMENTO
