@@ -1,0 +1,1 @@
+g++ interfaccia.cpp -L dependencies\lib -lpq -o interfaccia

@@ -141,7 +141,7 @@ CREATE INDEX indice_quote ON Scommesse(Quota);
 
 --QUERY
 
---1 
+--1 : Top 20 Vincite Scommesse Cavalli 
 SELECT G.Nome, G.Cognome, E.Importo*S.Quota AS Vincita, S.Cavallo, S.Gara
 FROM    (Giocatore AS G 
         JOIN 
@@ -154,14 +154,16 @@ WHERE E.Esito=TRUE
 ORDER BY Vincita DESC
 LIMIT 20
 
---2
+--2 : Giocatori con Saldo Reale maggiore di 500€
 SELECT G.Nome, G.Cognome, SUM(S.Saldo_Reale)
 FROM    (Giocatore AS G
         JOIN
         Saldo AS S
         ON G.Codice_Fiscale=S.CF_Giocatore)
 GROUP BY G.Nome, G.Cognome 
---3
+HAVING SUM(S.Saldo_Reale) > 500
+
+--3 : Totale Scommesso nei Cavalli e in partite di Calcio da ogni giocatore 
 SELECT G.Nome, G.Cognome, SUM(E.Importo) AS Tot_Scommesso
 FROM    (Giocatore AS G
         JOIN 
@@ -170,7 +172,7 @@ FROM    (Giocatore AS G
 GROUP BY G.Nome,G.Cognome        
 ORDER BY Tot_Scommesso DESC
 
---4 
+--4 : Top 20 Perdite in scommesse su partite di Calcio
 SELECT G.Nome, G.Cognome, E.Importo AS Perdita, S.Risultato, S.Partita
 FROM    (Giocatore AS G 
         JOIN 
