@@ -60,7 +60,7 @@ CREATE TABLE Slot(
     ID_Gioco VARCHAR(10) PRIMARY KEY,
     Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, 
     Numero_Linee INT NOT NULL CHECK (Numero_Linee >= 2 AND Numero_Linee <= 10), 
-    JackPot DECIMAL(6,2),   
+    JackPot DECIMAL(10,2),   
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
@@ -82,7 +82,7 @@ CREATE TABLE Giocata(
 
 -- GIAN
 
-CREATE TABLE Scomessa(
+CREATE TABLE Scommessa(
     ID_Scommessa CHAR(10) PRIMARY KEY,
     Quota DECIMAL(4,2) NOT NULL,
     Data_Apertura DATE,
@@ -92,20 +92,20 @@ CREATE TABLE Scomessa(
     FOREIGN KEY(Casino) REFERENCES Casino(ID_Casino) ON DELETE CASCADE
 );
 
-CREATE TABLE Scomessa_Cavallo(
+CREATE TABLE Scommessa_Cavallo(
     ID_Scommessa VARCHAR(10) PRIMARY KEY,
     Cavallo VARCHAR(255) NOT NULL,
     Gara VARCHAR(20) NOT NULL,
 
-    FOREIGN KEY(ID_Scommessa) REFERENCES Scomessa(ID_Scommessa) ON DELETE CASCADE
+    FOREIGN KEY(ID_Scommessa) REFERENCES Scommessa(ID_Scommessa) ON DELETE CASCADE
 );
 
-CREATE TABLE Scomessa_Calcio(
+CREATE TABLE Scommessa_Calcio(
     ID_Scommessa VARCHAR(10) PRIMARY KEY,
     Risultato VARCHAR(2) NOT NULL,
     Partita VARCHAR(255) NOT NULL,
 
-    FOREIGN KEY(ID_Scommessa) REFERENCES Scomessa(ID_Scommessa) ON DELETE CASCADE
+    FOREIGN KEY(ID_Scommessa) REFERENCES Scommessa(ID_Scommessa) ON DELETE CASCADE
 );
 
 CREATE TABLE Effettuazione(
@@ -116,7 +116,7 @@ CREATE TABLE Effettuazione(
     Data_Effettuazione DATE NOT NULL,
 
     PRIMARY KEY(ID_Scommessa,CF_Giocatore),
-    FOREIGN KEY(ID_Scommessa) REFERENCES Scomessa(ID_Scommessa) ON DELETE CASCADE,
+    FOREIGN KEY(ID_Scommessa) REFERENCES Scommessa(ID_Scommessa) ON DELETE CASCADE,
     FOREIGN KEY(CF_Giocatore) REFERENCES Giocatore(Codice_Fiscale) ON DELETE CASCADE
 );
 
@@ -137,25 +137,28 @@ CREATE INDEX indice_giocata_cf_giocatore ON Giocata USING hash(CF_Giocatore);
 CREATE INDEX indice_data_giocata ON Giocata (Data_Giocata);
 
 CREATE INDEX indice_importi_scommesse ON Effettuazione USING hash(CF_Giocatore);
-CREATE INDEX indice_quote ON Scommesse(Quota);
+CREATE INDEX indice_quote ON Scommessa(Quota);
 
 --QUERY
 
 --1 : Top 20 Vincite Scommesse Cavalli 
-SELECT G.Nome, G.Cognome, E.Importo*S.Quota AS Vincita, S.Cavallo, S.Gara
-FROM    (Giocatore AS G 
+SELECT G.Nome, G.Cognome, E.Importo*Sc.Quota AS Vincita, S.Cavallo, S.Gara
+FROM    ((Giocatore AS G 
         JOIN 
         Effettuazione AS E 
         ON G.Codice_Fiscale=E.CF_Giocatore)
         JOIN 
-        Scommesse_Cavallo AS S 
-        ON S.ID_Scommessa=E.ID_Gioco 
+        Scommessa_Cavallo AS S 
+        ON S.ID_Scommessa=E.ID_Scommessa)
+        JOIN 
+        Scommessa AS Sc
+        ON S.ID_Scommessa=Sc.ID_Scommessa 
 WHERE E.Esito=TRUE
 ORDER BY Vincita DESC
 LIMIT 20
 
 --2 : Giocatori con Saldo Reale maggiore di 500€
-SELECT G.Nome, G.Cognome, SUM(S.Saldo_Reale)
+SELECT DISTINCT G.Nome, G.Cognome, SUM(S.Saldo_Reale)
 FROM    (Giocatore AS G
         JOIN
         Saldo AS S
@@ -169,7 +172,7 @@ FROM    (Giocatore AS G
         JOIN 
         Effettuazione AS E
         ON G.Codice_Fiscale=E.CF_Giocatore)
-GROUP BY G.Nome,G.Cognome        
+GROUP BY G.Nome, G.Cognome        
 ORDER BY Tot_Scommesso DESC
 
 --4 : Top 20 Perdite in scommesse su partite di Calcio
@@ -186,35 +189,43 @@ ORDER BY Perdita DESC
 LIMIT 20
 
 --MENNY
---1
-SELECT G.Codice_Fiscale, G.Nome, G.Cognome
-FROM  (Giocatore as G
+--1 : Giocatori che hanno giocato a poker in un casino' australino
+SELECT DISTINCT G.Codice_Fiscale, G.Nome, G.Cognome
+FROM  (((Giocatore as G
       JOIN Giocata as J 
       ON G.Codice_Fiscale = J.CF_Giocatore )
-      JOIN Poker as P ON J.ID_Gioco = P.ID_Gioco
-	  JOIN Gioco as O ON O.ID_Gioco = P.ID_Gioco
-      JOIN Casino as C ON O.Casino = C.ID_Casino
-WHERE C.Nazionalita = 'Australiana';
+      JOIN Poker as P 
+      ON J.ID_Gioco = P.ID_Gioco)
+	  JOIN Gioco as O 
+      ON O.ID_Gioco = P.ID_Gioco)
+      JOIN Casino as C 
+      ON O.Casino = C.ID_Casino
+WHERE C.Nazionalita = 'Australiana'
 
---2
-SELECT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli
-FROM (Casino as C
-    JOIN Conto as Co ON C.Conto = Co.Id_conto
-    JOIN Gioco as G ON C.ID_Casino  = G.casino
-	JOIN Poker as P ON G.ID_Gioco = P.ID_Gioco
-    )
+--2 : Casinò che possiedono un conto superiore a 7.000.000 euro e con almeno un tavolo da poker avente il limite di giocatori maggiore di 7
+
+SELECT DISTINCT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli
+FROM ((Casino as C
+    JOIN Conto as Co 
+    ON C.Conto = Co.Id_conto)
+    JOIN Gioco as G 
+    ON C.ID_Casino  = G.casino)
+	JOIN Poker as P 
+    ON G.ID_Gioco = P.ID_Gioco
 WHERE Co.Importo >= 7000000
 AND P.Limite_Tavolo > 7
 GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita
 
 
---3
+--3 : Casinò e numero di giocate alle slot di quel casinò tra il 2015/05/22 e il 2022/05/22
 SELECT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate
-FROM (Casino as C 
-    JOIN Gioco as G ON C.ID_Casino  = G.casino
-    JOIN Slot as SL ON G.ID_Gioco = SL.ID_Gioco
-    JOIN Giocata as S ON SL.ID_Gioco  = S.ID_Gioco
-    )
+FROM ((Casino as C 
+    JOIN Gioco as G 
+    ON C.ID_Casino  = G.casino)
+    JOIN Slot as SL 
+    ON G.ID_Gioco = SL.ID_Gioco)
+    JOIN Giocata as S 
+    ON SL.ID_Gioco  = S.ID_Gioco
 WHERE S.Data_Giocata >= '2015/05/22'
 AND S.Data_Giocata <= '2022/05/22'
-GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita;
+GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita
