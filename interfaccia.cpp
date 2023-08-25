@@ -44,7 +44,7 @@ int main(int argc, char** argv){
         cout<<"\t4. Top 20 Perdite in scommesse su partite di Calcio\n";
         cout<<"\t5. Giocatori che hanno giocato a poker in un casino' australiano\n";
         cout<<"\t6. Casino' che possiedono un conto superiore a 7.000.000 euro e con almeno un tavolo da poker\n\tavente il limite di giocatori maggiore di 7\n";
-        cout<<"\t7. Casino' e numero di giocate alle slot di quel casino' tra il 2015/05/22 e il 2022/05/22\n";
+        cout<<"\t7. Casino' e numero di giocate alle slot di quel casino'2 tra il 2015/05/22 e il 2022/05/22\n";
         cout<<"\tDEFAULT: CLOSE INTERFACE\n";
 
         cout<<"\nInserisci il numero della query che vuoi eseguire:\n";
@@ -209,7 +209,7 @@ int main(int argc, char** argv){
         }
     }
 
-    PQfinish(conn); //chiude la connessione
+    PQfinish(conn); 
 
     return 0;
 }
