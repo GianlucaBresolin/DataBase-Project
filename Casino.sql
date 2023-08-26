@@ -189,43 +189,48 @@ ORDER BY Perdita DESC
 LIMIT 20
 
 --MENNY
---1 : Giocatori che hanno giocato a poker in un casino' australino
-SELECT DISTINCT G.Codice_Fiscale, G.Nome, G.Cognome
-FROM  (((Giocatore as G
-      JOIN Giocata as J 
-      ON G.Codice_Fiscale = J.CF_Giocatore )
-      JOIN Poker as P 
-      ON J.ID_Gioco = P.ID_Gioco)
-	  JOIN Gioco as O 
-      ON O.ID_Gioco = P.ID_Gioco)
-      JOIN Casino as C 
-      ON O.Casino = C.ID_Casino
-WHERE C.Nazionalita = 'Australiana'
+--1 : Giocatori e rispettivo numero di giocate a poker in ordine decrescente tra il '2020-05-22' e il '2022-05-22'
+SELECT G.Codice_Fiscale ,G.nome,  COUNT(*) AS Numero_Giocate
+FROM Giocatore AS G
+    JOIN Giocata AS J 
+    ON G.Codice_Fiscale = J.CF_Giocatore
+    JOIN Gioco AS O 
+    ON O.ID_Gioco = J.ID_Gioco
+    JOIN Poker AS P 
+    ON P.ID_Gioco = O.ID_Gioco
+    JOIN Casino AS C 
+    ON O.Casino = C.ID_Casino
+WHERE  J.Data_Giocata >= '2020-05-22' AND J.Data_Giocata <= '2022-05-22'
+GROUP BY G.Codice_Fiscale , G.nome
+ORDER BY Numero_Giocate DESC
 
---2 : Casinò che possiedono un conto superiore a 7.000.000 euro e con almeno un tavolo da poker avente il limite di giocatori maggiore di 7
+
+--2 : Casino' e rispettivo numero di tavoli da poker che hanno in totale, che possiedono un conto superiore a 7.000.000 euro e con almeno un tavolo da poker avente il limite di giocatori maggiore di 7
 
 SELECT DISTINCT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli
 FROM ((Casino as C
-    JOIN Conto as Co 
-    ON C.Conto = Co.Id_conto)
-    JOIN Gioco as G 
-    ON C.ID_Casino  = G.casino)
-	JOIN Poker as P 
-    ON G.ID_Gioco = P.ID_Gioco
-WHERE Co.Importo >= 7000000
-AND P.Limite_Tavolo > 7
+	JOIN Conto as Co
+	ON C.Conto = Co.ID_conto)
+	JOIN Gioco as G
+	ON C.ID_Casino  = G.casino)
+    JOIN Poker as P
+	ON G.ID_Gioco = P.ID_Gioco
+WHERE Co.Importo >= 7000000 AND P.Limite_Tavolo > 7
 GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita
 
 
---3 : Casinò e numero di giocate alle slot di quel casinò tra il 2015/05/22 e il 2022/05/22
-SELECT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate
-FROM ((Casino as C 
-    JOIN Gioco as G 
-    ON C.ID_Casino  = G.casino)
-    JOIN Slot as SL 
-    ON G.ID_Gioco = SL.ID_Gioco)
-    JOIN Giocata as S 
-    ON SL.ID_Gioco  = S.ID_Gioco
-WHERE S.Data_Giocata >= '2015/05/22'
-AND S.Data_Giocata <= '2022/05/22'
+
+--3 : Casino' e numero di giocate alle slot di quel casino' tra il '2015/01/01' e il '2022/12/31'
+
+SELECT  DISTINCT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate
+FROM ((Casino as C
+	JOIN Gioco as G 
+ON C.ID_Casino  = G.casino)
+	JOIN Slot as SL 
+ON G.ID_Gioco = SL.ID_Gioco)
+	JOIN Giocata as S 
+ON SL.ID_Gioco  = S.ID_Gioco
+WHERE S.Data_Giocata >= '2015/01/01'
+AND S.Data_Giocata <= '2022/12/31'
 GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita
+

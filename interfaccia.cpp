@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include "dependencies/include/libpq-fe.h"
 
 #define PG_HOST "127.0.0.1" 
@@ -42,9 +43,9 @@ int main(int argc, char** argv){
         cout<<"\t2. Giocatori con Saldo Reale complessivo maggiore di 500 euro\n";
         cout<<"\t3. Totale Scommesso nei Cavalli e in partite di Calcio da ogni giocatore\n";
         cout<<"\t4. Top 20 Perdite in scommesse su partite di Calcio\n";
-        cout<<"\t5. Giocatori che hanno giocato a poker in un casino' australiano\n";
-        cout<<"\t6. Casino' che possiedono un conto superiore a 7.000.000 euro e con almeno un tavolo da poker\n\tavente il limite di giocatori maggiore di 7\n";
-        cout<<"\t7. Casino' e numero di giocate alle slot di quel casino'2 tra il 2015/05/22 e il 2022/05/22\n";
+        cout<<"\t5. Giocatori e rispettivo numero di giocate a poker in ordine decrescente\n\ttra il '2020-05-22' e il '2022-05-22'\n";
+        cout<<"\t6. Casino' e rispettivo numero di tavoli da poker che hanno in totale, che\n\tpossiedono un conto superiore a 7.000.000 euro e con almeno un tavolo\n\tda poker avente il limite di giocatori maggiore di 7\n";
+        cout<<"\t7. Casino' e numero di giocate alle slot di quel casino' tra il '2015/01/01'\n\te il '2022/12/31'\n";
         cout<<"\tDEFAULT: CLOSE INTERFACE\n";
 
         cout<<"\nInserisci il numero della query che vuoi eseguire:\n";
@@ -64,13 +65,13 @@ int main(int argc, char** argv){
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(15)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(15)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -85,13 +86,13 @@ int main(int argc, char** argv){
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(15)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(15)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -106,13 +107,13 @@ int main(int argc, char** argv){
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(15)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(15)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -127,13 +128,13 @@ int main(int argc, char** argv){
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(15)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(15)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -141,20 +142,20 @@ int main(int argc, char** argv){
                 PQclear(res); 
                 break;
             case 5:
-                res=PQexec(conn, "SELECT DISTINCT G.Codice_Fiscale, G.Nome, G.Cognome FROM  (Giocatore as G JOIN Giocata as J ON G.Codice_Fiscale = J.CF_Giocatore ) JOIN Poker as P ON J.ID_Gioco = P.ID_Gioco JOIN Gioco as O ON O.ID_Gioco = P.ID_Gioco JOIN Casino as C ON O.Casino = C.ID_Casino WHERE C.Nazionalita = 'Australiana'");
+                res=PQexec(conn, "SELECT G.Codice_Fiscale ,G.nome,  COUNT(*) AS Numero_Giocate FROM Giocatore AS G JOIN Giocata AS J ON G.Codice_Fiscale = J.CF_Giocatore JOIN Gioco AS O ON O.ID_Gioco = J.ID_Gioco JOIN Poker AS P ON P.ID_Gioco = O.ID_Gioco JOIN Casino AS C ON O.Casino = C.ID_Casino WHERE  J.Data_Giocata >= '2020-05-22' AND J.Data_Giocata <= '2022-05-22' GROUP BY G.Codice_Fiscale , G.nome ORDER BY Numero_Giocate DESC");
                 checkResults(res, conn);
 
                 tuple=PQntuples(res); 
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(15)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(15)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -162,20 +163,20 @@ int main(int argc, char** argv){
                 PQclear(res); 
                 break;
             case 6:
-                res=PQexec(conn, "SELECT DISTINCT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli FROM (Casino as C JOIN Conto as Co ON C.Conto = Co.Id_conto JOIN Gioco as G ON C.ID_Casino = G.casino JOIN Poker as P ON G.ID_Gioco = P.ID_Gioco) WHERE (Co.Importo >= 7000000 AND P.Limite_Tavolo > 7) GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita");
+                res=PQexec(conn, "SELECT DISTINCT C.ID_Casino, C.indirizzo, C.nazionalita , COUNT(P.ID_Gioco) as Numero_Tavoli FROM ((Casino as C JOIN Conto as Co ON C.Conto = Co.ID_conto) JOIN Gioco as G ON C.ID_Casino  = G.casino) JOIN Poker as P ON G.ID_Gioco = P.ID_Gioco WHERE Co.Importo >= 7000000 AND P.Limite_Tavolo > 7 GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita");
                 checkResults(res, conn);
 
                 tuple=PQntuples(res); 
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(20)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(20)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
@@ -183,20 +184,20 @@ int main(int argc, char** argv){
                 PQclear(res); 
                 break;
             case 7:
-                res=PQexec(conn, "SELECT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate FROM (Casino as C JOIN Gioco as G ON C.ID_Casino  = G.casino JOIN Slot as SL ON G.ID_Gioco = SL.ID_Gioco JOIN Giocata as S ON SL.ID_Gioco  = S.ID_Gioco) WHERE S.Data_Giocata >= '2015/05/22' AND S.Data_Giocata <= '2022/05/22' GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita");
+                res=PQexec(conn, "SELECT  DISTINCT C.ID_Casino , C.indirizzo, C.nazionalita, COUNT(*) AS Numero_Giocate FROM ((Casino as C JOIN Gioco as G ON C.ID_Casino  = G.casino) JOIN Slot as SL ON G.ID_Gioco = SL.ID_Gioco) JOIN Giocata as S ON SL.ID_Gioco  = S.ID_Gioco WHERE S.Data_Giocata >= '2015/01/01' AND S.Data_Giocata <= '2022/12/31' GROUP BY C.ID_Casino, C.indirizzo, C.nazionalita");
                 checkResults(res, conn);
 
                 tuple=PQntuples(res); 
                 campi=PQnfields(res); 
 
                 for(int i=0; i<campi; ++i){
-                    cout<<PQfname(res,i)<<"\t\t"; 
+                    cout<<setw(20)<<PQfname(res,i)<<"\t\t"; 
                 }
                 cout<<endl;
 
                 for(int i=0; i<tuple; ++i){
                     for(int j=0; j<campi; ++j){
-                        cout<<PQgetvalue(res, i, j)<<"\t\t"; 
+                        cout<<setw(20)<<PQgetvalue(res, i, j)<<"\t\t"; 
                     }
                     cout<<endl;
                 }
