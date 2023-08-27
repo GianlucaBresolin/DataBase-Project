@@ -139,6 +139,82 @@ CREATE INDEX indice_data_giocata ON Giocata (Data_Giocata);
 CREATE INDEX indice_cf_effettuazione ON Effettuazione USING hash(CF_Giocatore);
 CREATE INDEX indice_esito ON Effettuazione (Esito);
 
+--TRIGGER
+
+--1
+
+CREATE FUNCTION checkDuplicateGioco() RETURNS TRIGGER AS $$
+BEGIN
+	IF EXISTS (
+    	SELECT 1
+        	FROM (
+            	SELECT ID_Gioco FROM Poker
+            	UNION
+            	SELECT ID_Gioco FROM Slot
+            	UNION
+            	SELECT ID_Gioco FROM BlackJack
+            	UNION
+            	SELECT ID_Gioco FROM Roulette
+        	) AS CombinedGames
+        	WHERE ID_Gioco = NEW.ID_Gioco
+	) THEN
+    	RAISE EXCEPTION 'Gioco già assegnato';
+	ELSE
+          	RETURN NEW;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER checkDuplicatePokerTrigger
+BEFORE INSERT ON Poker
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateGioco();
+
+CREATE TRIGGER checkDuplicateSlotTrigger
+BEFORE INSERT ON Slot
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateGioco();
+
+CREATE TRIGGER checkDuplicateBlackJackTrigger
+BEFORE INSERT ON BlackJack
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateGioco();
+
+CREATE TRIGGER checkDuplicateRouletteTrigger
+BEFORE INSERT ON Roulette
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateGioco();
+
+--2
+
+CREATE FUNCTION checkDuplicateScommessa() RETURNS TRIGGER AS $$
+BEGIN
+	IF EXISTS (
+    	SELECT 1
+        	FROM (
+            	SELECT ID_Scommessa FROM Scommessa_Cavallo
+            	UNION
+            	SELECT ID_Scommessa FROM Scommessa_Calcio
+        	) AS CombinedGames
+        	WHERE ID_Scommessa = NEW.ID_Scommessa
+	) THEN
+    	RAISE EXCEPTION 'Scommessa già assegnata';
+	ELSE
+          	RETURN NEW;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER checkDuplicateScommessaCavalloTrigger
+BEFORE INSERT ON Scommessa_Cavallo
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateScommessa();
+
+CREATE TRIGGER checkDuplicateScommessaCalcioTrigger
+BEFORE INSERT ON Scommessa_Calcio
+FOR EACH ROW
+EXECUTE FUNCTION checkDuplicateScommessa();
+
 --QUERY
 
 --1 : Top 20 Vincite Scommesse Cavalli 
