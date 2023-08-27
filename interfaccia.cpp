@@ -40,7 +40,7 @@ int main(int argc, char** argv){
     while(flag){
         cout<<"\nQuery disponibili:\n";
         cout<<"\t1. Top 20 Vincite Scommesse Cavalli\n";
-        cout<<"\t2. Giocatori con Saldo Reale complessivo maggiore di 500 euro\n";
+        cout<<"\t2. Giocatori con Saldo Reale complessivo maggiore di 5000 euro\n";
         cout<<"\t3. Totale Scommesso nei Cavalli e in partite di Calcio da ogni giocatore\n";
         cout<<"\t4. Top 20 Perdite in scommesse su partite di Calcio\n";
         cout<<"\t5. Giocatori e rispettivo numero di giocate a poker in ordine decrescente\n\ttra il '2020-05-22' e il '2022-05-22'\n";
@@ -79,7 +79,7 @@ int main(int argc, char** argv){
                 PQclear(res); 
                 break;
             case 2:
-                res=PQexec(conn, "SELECT DISTINCT G.Nome, G.Cognome, SUM(S.Saldo_Reale) FROM (Giocatore AS G JOIN Saldo AS S ON G.Codice_Fiscale=S.CF_Giocatore) GROUP BY G.Nome, G.Cognome HAVING SUM(S.Saldo_Reale) > 500");
+                res=PQexec(conn, "SELECT DISTINCT G.Nome, G.Cognome, SUM(S.Saldo_Reale) FROM (Giocatore AS G JOIN Saldo AS S ON G.Codice_Fiscale=S.CF_Giocatore) GROUP BY G.Nome, G.Cognome HAVING SUM(S.Saldo_Reale) > 5000");
                 checkResults(res, conn);
 
                 tuple=PQntuples(res); 

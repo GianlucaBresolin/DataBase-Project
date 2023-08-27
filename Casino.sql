@@ -164,7 +164,7 @@ FROM    (Giocatore AS G
         Saldo AS S
         ON G.Codice_Fiscale=S.CF_Giocatore)
 GROUP BY G.Nome, G.Cognome 
-HAVING SUM(S.Saldo_Reale) > 500
+HAVING SUM(S.Saldo_Reale) > 5000
 
 --3 : Totale Scommesso nei Cavalli e in partite di Calcio da ogni giocatore 
 SELECT G.Nome, G.Cognome, SUM(E.Importo) AS Tot_Scommesso
