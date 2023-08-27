@@ -136,8 +136,8 @@ CREATE TABLE Saldo(
 CREATE INDEX indice_giocata_cf_giocatore ON Giocata USING hash(CF_Giocatore);
 CREATE INDEX indice_data_giocata ON Giocata (Data_Giocata);
 
-CREATE INDEX indice_importi_scommesse ON Effettuazione USING hash(CF_Giocatore);
-CREATE INDEX indice_quote ON Scommessa(Quota);
+CREATE INDEX indice_cf_effettuazione ON Effettuazione USING hash(CF_Giocatore);
+CREATE INDEX indice_esito ON Effettuazione (Esito);
 
 --QUERY
 
@@ -183,7 +183,7 @@ FROM    (Giocatore AS G
         ON G.Codice_Fiscale=E.CF_Giocatore)
         JOIN 
         Scommessa_Calcio AS S 
-        ON S.ID_Scommessa=E.ID_Gioco 
+        ON S.ID_Scommessa=E.ID_Scommessa 
 WHERE E.Esito=FALSE
 ORDER BY Perdita DESC
 LIMIT 20
