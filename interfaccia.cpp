@@ -6,8 +6,8 @@
 
 #define PG_HOST "127.0.0.1" 
 #define PG_USER "postgres" 
-#define PG_DB "Casino_Project"
-#define PG_PASS "Sansone1" 
+#define PG_DB ""
+#define PG_PASS "" 
 #define PG_PORT 5432
 
 using namespace std ;

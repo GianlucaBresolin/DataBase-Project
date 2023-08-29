@@ -11,7 +11,7 @@ CREATE TABLE Giocatore(
 -- MENNY
 
 CREATE TABLE Conto(
-   ID_Conto VARCHAR(10) PRIMARY KEY,
+   ID_Conto CHAR(10) PRIMARY KEY,
    Importo DECIMAL(12,2) NOT NULL,
    Banca VARCHAR(255) NOT NULL
 );
@@ -21,7 +21,7 @@ CREATE TABLE Casino(
    Indirizzo VARCHAR(255) NOT NULL,
    Nazionalita VARCHAR(255) NOT NULL,
    Data_Apertura DATE NOT NULL,
-   Conto VARCHAR(10) NOT NULL,
+   Conto CHAR(10) NOT NULL,
 
    FOREIGN KEY(Conto) REFERENCES Conto(ID_Conto) ON DELETE CASCADE
 );
@@ -29,20 +29,20 @@ CREATE TABLE Casino(
 CREATE TABLE Gioco(
     ID_Gioco CHAR(10) PRIMARY KEY,
     Puntata_Minima DECIMAL(4,2) NOT NULL,
-    Casino CHAR(30) NOT NULL,
+    Casino VARCHAR(30) NOT NULL,
 
     FOREIGN KEY(Casino) REFERENCES Casino(ID_Casino) ON DELETE CASCADE
 );
 
 CREATE TABLE Poker(
-    ID_Gioco VARCHAR(10) PRIMARY KEY,
+    ID_Gioco CHAR(10) PRIMARY KEY,
     Limite_Tavolo INT NOT NULL, 
 
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
 
 CREATE TABLE BlackJack(
-    ID_Gioco VARCHAR(10) PRIMARY KEY,
+    ID_Gioco CHAR(10) PRIMARY KEY,
     Numero_Mazzi INT NOT NULL, 
     Limite_Tavolo INT NOT NULL, 
 
@@ -50,14 +50,14 @@ CREATE TABLE BlackJack(
 );
 
 CREATE TABLE Roulette(
-    ID_Gioco VARCHAR(10) PRIMARY KEY,
+    ID_Gioco CHAR(10) PRIMARY KEY,
     Moltiplicatore_Numero_Vincente DECIMAL(5,2) NOT NULL, 
     
     FOREIGN KEY(ID_Gioco) REFERENCES Gioco(ID_Gioco) ON DELETE CASCADE
 );
 
 CREATE TABLE Slot(
-    ID_Gioco VARCHAR(10) PRIMARY KEY,
+    ID_Gioco CHAR(10) PRIMARY KEY,
     Moltiplicatore_Massimo DECIMAL(5,2) NOT NULL, 
     Numero_Linee INT NOT NULL CHECK (Numero_Linee >= 2 AND Numero_Linee <= 10), 
     JackPot DECIMAL(10,2),   
@@ -66,8 +66,8 @@ CREATE TABLE Slot(
 );
 
 CREATE TABLE Giocata(
-    ID_Gioco VARCHAR(10),
-    CF_Giocatore VARCHAR(16),
+    ID_Gioco CHAR(10),
+    CF_Giocatore CHAR(16),
     Importo DECIMAL(10, 2) NOT NULL,
     Vincita DECIMAL(10,2),
     Data_Giocata DATE NOT NULL,
@@ -87,13 +87,13 @@ CREATE TABLE Scommessa(
     Quota DECIMAL(4,2) NOT NULL,
     Data_Apertura DATE,
     Data_Chiusura DATE,
-    Casino CHAR(30) NOT NULL,
+    Casino VARCHAR(30) NOT NULL,
 
     FOREIGN KEY(Casino) REFERENCES Casino(ID_Casino) ON DELETE CASCADE
 );
 
 CREATE TABLE Scommessa_Cavallo(
-    ID_Scommessa VARCHAR(10) PRIMARY KEY,
+    ID_Scommessa CHAR(10) PRIMARY KEY,
     Cavallo VARCHAR(255) NOT NULL,
     Gara VARCHAR(20) NOT NULL,
 
@@ -101,7 +101,7 @@ CREATE TABLE Scommessa_Cavallo(
 );
 
 CREATE TABLE Scommessa_Calcio(
-    ID_Scommessa VARCHAR(10) PRIMARY KEY,
+    ID_Scommessa CHAR(10) PRIMARY KEY,
     Risultato VARCHAR(2) NOT NULL,
     Partita VARCHAR(255) NOT NULL,
 
@@ -109,8 +109,8 @@ CREATE TABLE Scommessa_Calcio(
 );
 
 CREATE TABLE Effettuazione(
-    ID_Scommessa VARCHAR(10),
-    CF_Giocatore VARCHAR(16),
+    ID_Scommessa CHAR(10),
+    CF_Giocatore CHAR(16),
     Importo DECIMAL(10,2) NOT NULL,
     Esito BOOLEAN,
     Data_Effettuazione DATE NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE Effettuazione(
 );
 
 CREATE TABLE Saldo(
-    ID_Saldo VARCHAR(10),
+    ID_Saldo CHAR(10),
     ID_Casino VARCHAR(30),
     Bonus DECIMAL(10,2) DEFAULT 0,
     Saldo_Reale DECIMAL(10,2) DEFAULT 0,
