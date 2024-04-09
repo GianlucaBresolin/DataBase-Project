@@ -7,7 +7,7 @@ informazioni relative ad un complesso di casinò.
 
 ## Contributori
 - Bresolin Gianluca
-- Giovanni Menon
+- Menon Giovanni
 
 ## Tecnologie utilizzate
 - **PostgreSQL** - Sistema di gestione di database relazionali
