@@ -9,7 +9,7 @@ informazioni relative ad un complesso di casinò.
 - Bresolin Gianluca
 - Menon Giovanni
 
-## Tecnologie utilizzate
+## Tecnologie 
 - **PostgreSQL** - Sistema di gestione di database relazionali
 - **Python** - Utilizzato per gli script di popolamento del database
 - **C++** - Interfaccia a riga di comando per il database
